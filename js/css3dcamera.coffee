@@ -1,4 +1,7 @@
-(($) ->
+#javascript:(function(){var s=document.createElement("script");s.src="http://t02uk.github.io/experimental/js/css3dcamera.js"+(+new Date()); document.body.appendChild(s)})();
+
+main = ($) ->
+
   cssv = (jqueryObj, name, value) ->
     prefices = ['', '-moz-', '-webkit-', '-o-', '-ms-']
     #jqueryObj.css(name, value)
@@ -107,5 +110,21 @@
 
   window.CSS3DCamera = CSS3DCamera
 
-
-)(jQuery)
+(() ->
+  if window.THREE isnt undefined and window.jQuery isnt undefined
+    main(jQuery)
+    if (window.test)
+      window.test()
+      return
+  body = document.getElementsByTagName('body')[0]
+  if body isnt undefined
+    if window.jQuery is undefined
+      script = document.createElement('script')
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"
+      body.appendChild(script)
+    if window.THREE is undefined
+      script = document.createElement('script')
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js"
+      body.appendChild(script)
+  setTimeout(arguments.callee, 100)
+)()  
