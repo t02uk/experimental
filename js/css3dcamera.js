@@ -58,16 +58,14 @@
           padding: '0px',
           position: 'relative',
           left: '230px',
-          top: '230px',
-          background: 'blue'
+          top: '230px'
         });
         this.$domView.css({
           margin: '0px',
           padding: '0px',
           position: 'relative',
           left: '-230px',
-          top: '-230px',
-          background: 'red'
+          top: '-230px'
         });
         cssv(this.$domCamera, 'perspective-origin', '0% 0%');
         cssv(this.$domView, 'perspective-origin', '0% 0%');

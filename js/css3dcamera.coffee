@@ -53,7 +53,6 @@ main = ($) ->
         position: 'relative'
         left: '230px'
         top: '230px'
-        background: 'blue'
 
       @$domView.css
         margin: '0px'
@@ -61,7 +60,6 @@ main = ($) ->
         position: 'relative'
         left: '-230px'
         top: '-230px'
-        background: 'red'
 
       cssv(@$domCamera, 'perspective-origin', '0% 0%')
       cssv(@$domView, 'perspective-origin', '0% 0%')
