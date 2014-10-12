@@ -105,6 +105,6 @@
 
       cssv(@$domCamera, 'transform', @cssString(@transformMatrix))
 
-
   window.CSS3DCamera = CSS3DCamera
+
 )(jQuery)
