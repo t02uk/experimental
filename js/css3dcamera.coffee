@@ -110,6 +110,17 @@ main = ($) ->
 
   window.CSS3DCamera = CSS3DCamera
 
+window.test = ->
+  c = 0
+  camera = new CSS3DCamera()
+  mloop = ->
+    position = new THREE.Vector3(c * 10, 10, 1000)
+    at = new THREE.Vector3(0, 0, 0)
+    upTo = new THREE.Vector3(0, -1, 0)
+    camera.lookAt(position, at, upTo)
+    c++
+  window.setInterval(mloop, 100)
+
 (() ->
   if window.THREE isnt undefined and window.jQuery isnt undefined
     main(jQuery)

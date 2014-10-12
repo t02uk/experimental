@@ -112,6 +112,21 @@
     return window.CSS3DCamera = CSS3DCamera;
   };
 
+  window.test = function() {
+    var c, camera, mloop;
+    c = 0;
+    camera = new CSS3DCamera();
+    mloop = function() {
+      var at, position, upTo;
+      position = new THREE.Vector3(c * 10, 10, 1000);
+      at = new THREE.Vector3(0, 0, 0);
+      upTo = new THREE.Vector3(0, -1, 0);
+      camera.lookAt(position, at, upTo);
+      return c++;
+    };
+    return window.setInterval(mloop, 100);
+  };
+
   (function() {
     var body, script;
     if (window.THREE !== void 0 && window.jQuery !== void 0) {
