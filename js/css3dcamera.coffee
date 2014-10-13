@@ -47,19 +47,34 @@ main = ($) ->
         @$domView.append(child)
       $body.append(@$domCamera)
 
+      $body.css
+        overflow: 'hidden'
+
       @$domCamera.css
         margin: '0px'
         padding: '0px'
-        position: 'relative'
-        left: '230px'
-        top: '230px'
+        position: 'absolute'
+        background: 'blue'
 
       @$domView.css
         margin: '0px'
         padding: '0px'
-        position: 'relative'
-        left: '-230px'
-        top: '-230px'
+        position: 'absolute'
+        background: 'red'
+
+      setDomPosition = =>
+        width = $(window).width()
+        height = $(window).height()
+        @$domCamera.css
+          left: width / 2
+          top: height / 2
+
+        @$domView.css
+          left: 0
+          top: 0
+
+      setDomPosition()
+      $(window).resize setDomPosition
 
       cssv(@$domCamera, 'perspective-origin', '0% 0%')
       cssv(@$domView, 'perspective-origin', '0% 0%')
@@ -112,7 +127,7 @@ window.test = ->
   c = 0
   camera = new CSS3DCamera()
   mloop = ->
-    position = new THREE.Vector3(c * 10, 10, 1000)
+    position = new THREE.Vector3(0, 0, 1000 - c * 10)
     at = new THREE.Vector3(0, 0, 0)
     upTo = new THREE.Vector3(0, -1, 0)
     camera.lookAt(position, at, upTo)
@@ -129,11 +144,11 @@ window.test = ->
   if body isnt undefined
     if window.jQuery is undefined
       script = document.createElement('script')
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"
       body.appendChild(script)
     if window.THREE is undefined
       script = document.createElement('script')
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js"
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"
       body.appendChild(script)
-  setTimeout(arguments.callee, 100)
+  setTimeout(arguments.callee, 400)
 )()  

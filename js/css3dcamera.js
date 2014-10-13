@@ -42,7 +42,8 @@
       };
 
       CSS3DCamera.prototype.setupDom = function() {
-        var $body, child, e, flipTarget, _i, _j, _len, _len1, _ref, _results;
+        var $body, child, e, flipTarget, setDomPosition, _i, _j, _len, _len1, _ref, _results,
+          _this = this;
         this.$domCamera = $('<div>').attr('id', 'camera');
         this.$domView = $('<div>').attr('id', 'view');
         this.$domCamera.append(this.$domView);
@@ -53,20 +54,36 @@
           this.$domView.append(child);
         }
         $body.append(this.$domCamera);
+        $body.css({
+          overflow: 'hidden'
+        });
         this.$domCamera.css({
           margin: '0px',
           padding: '0px',
-          position: 'relative',
-          left: '230px',
-          top: '230px'
+          position: 'absolute',
+          background: 'blue'
         });
         this.$domView.css({
           margin: '0px',
           padding: '0px',
-          position: 'relative',
-          left: '-230px',
-          top: '-230px'
+          position: 'absolute',
+          background: 'red'
         });
+        setDomPosition = function() {
+          var height, width;
+          width = $(window).width();
+          height = $(window).height();
+          _this.$domCamera.css({
+            left: width / 2,
+            top: height / 2
+          });
+          return _this.$domView.css({
+            left: 0,
+            top: 0
+          });
+        };
+        setDomPosition();
+        $(window).resize(setDomPosition);
         cssv(this.$domCamera, 'perspective-origin', '0% 0%');
         cssv(this.$domView, 'perspective-origin', '0% 0%');
         flipTarget = $($('p'), $('p'));
@@ -116,7 +133,7 @@
     camera = new CSS3DCamera();
     mloop = function() {
       var at, position, upTo;
-      position = new THREE.Vector3(c * 10, 10, 1000);
+      position = new THREE.Vector3(0, 0, 1000 - c * 10);
       at = new THREE.Vector3(0, 0, 0);
       upTo = new THREE.Vector3(0, -1, 0);
       camera.lookAt(position, at, upTo);
@@ -138,16 +155,16 @@
     if (body !== void 0) {
       if (window.jQuery === void 0) {
         script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
         body.appendChild(script);
       }
       if (window.THREE === void 0) {
         script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js";
         body.appendChild(script);
       }
     }
-    return setTimeout(arguments.callee, 100);
+    return setTimeout(arguments.callee, 400);
   })();
 
 }).call(this);
