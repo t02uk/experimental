@@ -59,7 +59,6 @@ main = ($) ->
         margin: '0px'
         padding: '0px'
         position: 'absolute'
-        background: '#fee'
 
       setDomPosition = =>
         width = $(window).width()

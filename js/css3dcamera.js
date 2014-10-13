@@ -65,8 +65,7 @@
         this.$domView.css({
           margin: '0px',
           padding: '0px',
-          position: 'absolute',
-          background: '#fee'
+          position: 'absolute'
         });
         setDomPosition = function() {
           var height, width;
