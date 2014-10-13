@@ -3,7 +3,7 @@
   var main;
 
   main = function($) {
-    var CSS3DCamera, cssv;
+    var CSS3DCamera, Keyboard, Walker, cssv, test;
     cssv = function(jqueryObj, name, value) {
       var prefices, prefix, _i, _len, _results;
       prefices = ['', '-moz-', '-webkit-', '-o-', '-ms-'];
@@ -42,7 +42,7 @@
       };
 
       CSS3DCamera.prototype.setupDom = function() {
-        var $body, child, e, flipTarget, setDomPosition, _i, _j, _len, _len1, _ref, _results,
+        var $body, child, e, flipTarget, setDomPosition, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results,
           _this = this;
         this.$domCamera = $('<div>').attr('id', 'camera');
         this.$domView = $('<div>').attr('id', 'view');
@@ -60,14 +60,13 @@
         this.$domCamera.css({
           margin: '0px',
           padding: '0px',
-          position: 'absolute',
-          background: 'blue'
+          position: 'absolute'
         });
         this.$domView.css({
           margin: '0px',
           padding: '0px',
           position: 'absolute',
-          background: 'red'
+          background: '#fee'
         });
         setDomPosition = function() {
           var height, width;
@@ -86,14 +85,21 @@
         $(window).resize(setDomPosition);
         cssv(this.$domCamera, 'perspective-origin', '0% 0%');
         cssv(this.$domView, 'perspective-origin', '0% 0%');
-        flipTarget = $($('p'), $('p'));
-        _results = [];
-        for (_j = 0, _len1 = flipTarget.length; _j < _len1; _j++) {
-          e = flipTarget[_j];
+        _ref1 = $('*');
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          e = _ref1[_j];
           e = $(e);
-          cssv(e, 'transform-origin', '50% 50%');
           cssv(e, 'transform-style', 'preserve-3d');
-          _results.push(cssv(e, 'transform', 'rotateX(30deg)'));
+        }
+        flipTarget = $($('img'));
+        _results = [];
+        for (_k = 0, _len2 = flipTarget.length; _k < _len2; _k++) {
+          e = flipTarget[_k];
+          e = $(e);
+          cssv(e, 'transform-origin', '100% 100%');
+          cssv(e, 'transform-style', 'preserve-3d');
+          cssv(e, 'transform', 'rotateX(-60deg)');
+          _results.push(console.info(e));
         }
         return _results;
       };
@@ -101,7 +107,7 @@
       CSS3DCamera.prototype.cssString = function(matrix) {
         var string, t;
         t = matrix.elements;
-        string = [[t[0], t[4], t[8], t[12]].join(', '), [t[1], t[5], t[9], t[13]].join(', '), [t[2], t[6], t[10], t[14]].join(', '), [t[3], t[7], t[11], t[15]].join(', ')].join(',   ');
+        string = [[t[0], t[1], t[2], t[3]].join(', '), [t[4], t[5], t[6], t[7]].join(', '), [t[8], t[9], t[10], t[11]].join(', '), [t[12], t[13], t[14], t[15]].join(', ')].join(',   ');
         return "matrix3d(" + string + ")";
       };
 
@@ -124,43 +130,121 @@
       return CSS3DCamera;
 
     })();
-    return window.CSS3DCamera = CSS3DCamera;
-  };
+    Walker = (function() {
+      function Walker() {
+        this.camera = new CSS3DCamera();
+        this.yaw = -0.1;
+        this.pitch = 0.0;
+        this.position = new THREE.Vector3(0, 100, 100);
+        this.upTo = new THREE.Vector3(0, 0, 1);
+      }
 
-  window.test = function() {
-    var c, camera, mloop;
-    c = 0;
-    camera = new CSS3DCamera();
-    mloop = function() {
-      var at, position, upTo;
-      position = new THREE.Vector3(0, 0, 1000 - c * 10);
-      at = new THREE.Vector3(0, 0, 0);
-      upTo = new THREE.Vector3(0, -1, 0);
-      camera.lookAt(position, at, upTo);
-      return c++;
+      Walker.prototype.update = function() {
+        var front, up;
+        if (Keyboard.pressed(16)) {
+          front = this.direction();
+          front.z = 0;
+          front.normalize();
+          front.multiplyScalar(10);
+          up = new THREE.Vector3(0, 0, -1);
+          if (Keyboard.pressed(37)) {
+            this.position.add(front.clone().applyAxisAngle(up, Math.PI / 2));
+          }
+          if (Keyboard.pressed(38)) {
+            this.position.add(front.clone().applyAxisAngle(up, Math.PI * 0));
+          }
+          if (Keyboard.pressed(39)) {
+            this.position.add(front.clone().applyAxisAngle(up, -Math.PI / 2));
+          }
+          if (Keyboard.pressed(40)) {
+            return this.position.add(front.clone().applyAxisAngle(up, -Math.PI * 1));
+          }
+        } else {
+          if (Keyboard.pressed(37)) {
+            this.pitch -= 0.1;
+          }
+          if (Keyboard.pressed(39)) {
+            this.pitch += 0.1;
+          }
+          if (Keyboard.pressed(38)) {
+            this.yaw += 0.1;
+          }
+          if (Keyboard.pressed(40)) {
+            return this.yaw -= 0.1;
+          }
+        }
+      };
+
+      Walker.prototype.apply = function() {
+        this.at = this.position.clone().add(this.direction());
+        return this.camera.lookAt(this.position, this.at, this.upTo);
+      };
+
+      Walker.prototype.direction = function() {
+        var unit;
+        unit = new THREE.Vector3(0, 1, 0);
+        unit.applyAxisAngle(new THREE.Vector3(1, 0, 0), this.yaw);
+        unit.applyAxisAngle(new THREE.Vector3(0, 0, 1), this.pitch);
+        return unit;
+      };
+
+      return Walker;
+
+    })();
+    Keyboard = (function() {
+      function Keyboard() {}
+
+      Keyboard.setup = function() {
+        Keyboard.keypressed = [];
+        $(window).keyup(function(e) {
+          return Keyboard.keypressed[e.keyCode] = false;
+        });
+        return $(window).keydown(function(e) {
+          console.info(e.keyCode);
+          return Keyboard.keypressed[e.keyCode] = true;
+        });
+      };
+
+      Keyboard.pressed = function(key) {
+        if (key.charCodeAt) {
+          return !!Keyboard.keypressed[key.charCodeAt(0)];
+        } else {
+          return !!Keyboard.keypressed[key];
+        }
+      };
+
+      return Keyboard;
+
+    })();
+    Keyboard.setup();
+    test = function() {
+      var walker;
+      walker = new Walker();
+      return (function() {
+        walker.update();
+        walker.apply();
+        return setTimeout(arguments.callee, 66);
+      })();
     };
-    return window.setInterval(mloop, 100);
+    return test();
   };
 
   (function() {
     var body, script;
     if (window.THREE !== void 0 && window.jQuery !== void 0) {
       main(jQuery);
-      if (window.test) {
-        window.test();
-        return;
-      }
+      return;
     }
     body = document.getElementsByTagName('body')[0];
     if (body !== void 0) {
       if (window.jQuery === void 0) {
         script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js";
         body.appendChild(script);
       }
       if (window.THREE === void 0) {
         script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js";
         body.appendChild(script);
       }
     }
