@@ -1,4 +1,7 @@
 #javascript:(function(){var s=document.createElement("script");s.src="http://t02uk.github.io/experimental/js/css3dcamera.js"+(+new Date()); document.body.appendChild(s)})();
+# TODO
+# img要素の3D設定はCSSでやるべき
+# ほかも可能な限り
 
 main = ($) ->
 
@@ -16,8 +19,6 @@ main = ($) ->
       @transformMatrix = new THREE.Matrix4()
       @setupDom()
       
-    applyCss: ->
-
     initializeProjmatrix: ->
       viewAngle = 1.0
       far = -1
@@ -77,17 +78,6 @@ main = ($) ->
       cssv(@$domCamera, 'perspective-origin', '0% 0%')
       cssv(@$domView, 'perspective-origin', '0% 0%')
 
-      for e in $('*')
-        e = $(e)
-        cssv(e, 'transform-style', 'preserve-3d')
-
-      flipTarget = $($('img'))
-      for e in flipTarget
-        e = $(e)
-        cssv(e, 'transform-origin', '100% 100%')
-        cssv(e, 'transform-style', 'preserve-3d')
-        cssv(e, 'transform', 'rotateX(-60deg)')
-        console.info(e)
 
     cssString: (matrix) ->
       t = matrix.elements
@@ -131,13 +121,87 @@ main = ($) ->
       @pitch = 0.0
       @position = new THREE.Vector3(0, 100, 100)
       @upTo = new THREE.Vector3(0, 0, 1)
+      @installCss()
+
+    installCss: ->
+
+      prefices = ['', '-moz-', '-webkit-', '-o-', '-ms-']
+
+      asters = for prefix in prefices
+        """
+        #{prefix}transform-style: preserve-3d;
+        """
+      asters = """
+      * {
+        #{asters.join("\n")}
+      }
+      """
+
+      keyframes = for prefix in prefices
+        """
+@#{prefix}keyframes css3dcamera-flip-kf {
+  0%   { #{prefix}transform: rotateX(  0deg); }
+  100% { #{prefix}transform: rotateX(-60deg); }
+}
+@#{prefix}keyframes css3dcamera-flop-kf {
+  0%   { #{prefix}transform: rotateX(-60deg); }
+  100% { #{prefix}transform: rotateX(  0deg); }
+}
+        """
+
+      flipAnimation = for prefix in prefices
+        """
+    #{prefix}transform-origin: 100% 100%;
+    #{prefix}transform-style: preserve-3d;
+    #{prefix}animation: css3dcamera-flip-kf ease 0.5s normal;
+    #{prefix}transform: rotateX(-60deg);
+        """
+
+      flipClass = """
+.css3dcamera-flip {
+  #{flipAnimation.join("\n")};
+}
+        """
+
+      flopAnimation = for prefix in prefices
+        """
+    #{prefix}transform-origin: 100% 100%;
+    #{prefix}transform-style: preserve-3d;
+    #{prefix}animation: css3dcamera-flop-kf ease 0.5s normal;
+    #{prefix}transform: rotateX(  0deg);
+        """
+
+      flopClass = """
+.css3dcamera-flop {
+  #{flopAnimation.join("\n")};
+}
+        """
+
+      stylehtml = [
+        asters,
+        keyframes.join("\n"),
+        flipClass,
+        flopClass,
+      ].join("\n")
+      customCss = $("<style>").attr('type', 'text/css').html(stylehtml)
+      ($('head') || $('html')).append(customCss)
+
+    flipFlopElements: ->
+      for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, h1, h2, h3, h4, h5, h6 applet')
+        e = $(e)
+        unless e.hasClass('css3dcamera-flip')
+          e.addClass('css3dcamera-flip')
+          e.removeClass('css3dcamera-flop')
+        else
+          e.addClass('css3dcamera-flop')
+          e.removeClass('css3dcamera-flip')
 
     update: ->
       if Keyboard.pressed(16)
         front = @direction()
         front.z = 0
         front.normalize()
-        front.multiplyScalar(10)
+        front.multiplyScalar(30)
         up = new THREE.Vector3(0, 0, -1)
 
         if Keyboard.pressed(37)
@@ -157,6 +221,8 @@ main = ($) ->
           @yaw += 0.1
         if Keyboard.pressed(40)
           @yaw -= 0.1
+        if Keyboard.downed(32)
+          @flipFlopElements()
 
     apply: ->
       @at = @position.clone().add(@direction())
@@ -172,17 +238,29 @@ main = ($) ->
 
   class Keyboard
     @setup: ->
-      Keyboard.keypressed = []
+      Keyboard.pressedState = []
+      Keyboard.downedState = []
+      Keyboard.flush()
+
       $(window).keyup (e) ->
-        Keyboard.keypressed[e.keyCode] = false
+        Keyboard.pressedState[e.keyCode] = false
+        Keyboard.downedState[e.keyCode] = 0
       $(window).keydown (e) ->
-        console.info(e.keyCode)
-        Keyboard.keypressed[e.keyCode] = true
+        Keyboard.pressedState[e.keyCode] = true
+        Keyboard.downedState[e.keyCode]++
     @pressed: (key) ->
       if key.charCodeAt
-        !!Keyboard.keypressed[key.charCodeAt(0)]
+        !!Keyboard.pressedState[key.charCodeAt(0)]
       else
-        !!Keyboard.keypressed[key]
+        !!Keyboard.pressedState[key]
+    @downed: (key) ->
+      if key.charCodeAt
+        Keyboard.downedState[key.charCodeAt(0)] is 1
+      else
+        Keyboard.downedState[key] is 1
+    @flush: ->
+      for i in [0..255]
+        Keyboard.downedState[i] = 0
 
   Keyboard.setup()
 
@@ -192,6 +270,7 @@ main = ($) ->
       walker.update()
       walker.apply()
       setTimeout(arguments.callee, 66)
+      Keyboard.flush()
     )()
   test()
 

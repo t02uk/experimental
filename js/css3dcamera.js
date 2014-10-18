@@ -23,8 +23,6 @@
         this.setupDom();
       }
 
-      CSS3DCamera.prototype.applyCss = function() {};
-
       CSS3DCamera.prototype.initializeProjmatrix = function() {
         var far, near, viewAngle, w, x, y, z;
         viewAngle = 1.0;
@@ -42,7 +40,7 @@
       };
 
       CSS3DCamera.prototype.setupDom = function() {
-        var $body, child, e, flipTarget, setDomPosition, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results,
+        var $body, child, setDomPosition, _i, _len, _ref,
           _this = this;
         this.$domCamera = $('<div>').attr('id', 'camera');
         this.$domView = $('<div>').attr('id', 'view');
@@ -83,24 +81,7 @@
         setDomPosition();
         $(window).resize(setDomPosition);
         cssv(this.$domCamera, 'perspective-origin', '0% 0%');
-        cssv(this.$domView, 'perspective-origin', '0% 0%');
-        _ref1 = $('*');
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          e = _ref1[_j];
-          e = $(e);
-          cssv(e, 'transform-style', 'preserve-3d');
-        }
-        flipTarget = $($('img'));
-        _results = [];
-        for (_k = 0, _len2 = flipTarget.length; _k < _len2; _k++) {
-          e = flipTarget[_k];
-          e = $(e);
-          cssv(e, 'transform-origin', '100% 100%');
-          cssv(e, 'transform-style', 'preserve-3d');
-          cssv(e, 'transform', 'rotateX(-60deg)');
-          _results.push(console.info(e));
-        }
-        return _results;
+        return cssv(this.$domView, 'perspective-origin', '0% 0%');
       };
 
       CSS3DCamera.prototype.cssString = function(matrix) {
@@ -136,7 +117,73 @@
         this.pitch = 0.0;
         this.position = new THREE.Vector3(0, 100, 100);
         this.upTo = new THREE.Vector3(0, 0, 1);
+        this.installCss();
       }
+
+      Walker.prototype.installCss = function() {
+        var asters, customCss, flipAnimation, flipClass, flopAnimation, flopClass, keyframes, prefices, prefix, stylehtml;
+        prefices = ['', '-moz-', '-webkit-', '-o-', '-ms-'];
+        asters = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prefices.length; _i < _len; _i++) {
+            prefix = prefices[_i];
+            _results.push("" + prefix + "transform-style: preserve-3d;");
+          }
+          return _results;
+        })();
+        asters = "* {\n  " + (asters.join("\n")) + "\n}";
+        keyframes = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prefices.length; _i < _len; _i++) {
+            prefix = prefices[_i];
+            _results.push("@" + prefix + "keyframes css3dcamera-flip-kf {\n  0%   { " + prefix + "transform: rotateX(  0deg); }\n  100% { " + prefix + "transform: rotateX(-60deg); }\n}\n@" + prefix + "keyframes css3dcamera-flop-kf {\n  0%   { " + prefix + "transform: rotateX(-60deg); }\n  100% { " + prefix + "transform: rotateX(  0deg); }\n}");
+          }
+          return _results;
+        })();
+        flipAnimation = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prefices.length; _i < _len; _i++) {
+            prefix = prefices[_i];
+            _results.push("" + prefix + "transform-origin: 100% 100%;\n" + prefix + "transform-style: preserve-3d;\n" + prefix + "animation: css3dcamera-flip-kf ease 0.5s normal;\n" + prefix + "transform: rotateX(-60deg);");
+          }
+          return _results;
+        })();
+        flipClass = ".css3dcamera-flip {\n  " + (flipAnimation.join("\n")) + ";\n}";
+        flopAnimation = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prefices.length; _i < _len; _i++) {
+            prefix = prefices[_i];
+            _results.push("" + prefix + "transform-origin: 100% 100%;\n" + prefix + "transform-style: preserve-3d;\n" + prefix + "animation: css3dcamera-flop-kf ease 0.5s normal;\n" + prefix + "transform: rotateX(  0deg);");
+          }
+          return _results;
+        })();
+        flopClass = ".css3dcamera-flop {\n  " + (flopAnimation.join("\n")) + ";\n}";
+        stylehtml = [asters, keyframes.join("\n"), flipClass, flopClass].join("\n");
+        customCss = $("<style>").attr('type', 'text/css').html(stylehtml);
+        return ($('head') || $('html')).append(customCss);
+      };
+
+      Walker.prototype.flipFlopElements = function() {
+        var e, _i, _len, _ref, _results;
+        _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, h1, h2, h3, h4, h5, h6 applet');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          e = _ref[_i];
+          e = $(e);
+          if (!e.hasClass('css3dcamera-flip')) {
+            e.addClass('css3dcamera-flip');
+            _results.push(e.removeClass('css3dcamera-flop'));
+          } else {
+            e.addClass('css3dcamera-flop');
+            _results.push(e.removeClass('css3dcamera-flip'));
+          }
+        }
+        return _results;
+      };
 
       Walker.prototype.update = function() {
         var front, up;
@@ -144,7 +191,7 @@
           front = this.direction();
           front.z = 0;
           front.normalize();
-          front.multiplyScalar(10);
+          front.multiplyScalar(30);
           up = new THREE.Vector3(0, 0, -1);
           if (Keyboard.pressed(37)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI / 2));
@@ -169,7 +216,10 @@
             this.yaw += 0.1;
           }
           if (Keyboard.pressed(40)) {
-            return this.yaw -= 0.1;
+            this.yaw -= 0.1;
+          }
+          if (Keyboard.downed(32)) {
+            return this.flipFlopElements();
           }
         }
       };
@@ -194,22 +244,42 @@
       function Keyboard() {}
 
       Keyboard.setup = function() {
-        Keyboard.keypressed = [];
+        Keyboard.pressedState = [];
+        Keyboard.downedState = [];
+        Keyboard.flush();
         $(window).keyup(function(e) {
-          return Keyboard.keypressed[e.keyCode] = false;
+          Keyboard.pressedState[e.keyCode] = false;
+          return Keyboard.downedState[e.keyCode] = 0;
         });
         return $(window).keydown(function(e) {
-          console.info(e.keyCode);
-          return Keyboard.keypressed[e.keyCode] = true;
+          Keyboard.pressedState[e.keyCode] = true;
+          return Keyboard.downedState[e.keyCode]++;
         });
       };
 
       Keyboard.pressed = function(key) {
         if (key.charCodeAt) {
-          return !!Keyboard.keypressed[key.charCodeAt(0)];
+          return !!Keyboard.pressedState[key.charCodeAt(0)];
         } else {
-          return !!Keyboard.keypressed[key];
+          return !!Keyboard.pressedState[key];
         }
+      };
+
+      Keyboard.downed = function(key) {
+        if (key.charCodeAt) {
+          return Keyboard.downedState[key.charCodeAt(0)] === 1;
+        } else {
+          return Keyboard.downedState[key] === 1;
+        }
+      };
+
+      Keyboard.flush = function() {
+        var i, _i, _results;
+        _results = [];
+        for (i = _i = 0; _i <= 255; i = ++_i) {
+          _results.push(Keyboard.downedState[i] = 0);
+        }
+        return _results;
       };
 
       return Keyboard;
@@ -222,7 +292,8 @@
       return (function() {
         walker.update();
         walker.apply();
-        return setTimeout(arguments.callee, 66);
+        setTimeout(arguments.callee, 66);
+        return Keyboard.flush();
       })();
     };
     return test();
