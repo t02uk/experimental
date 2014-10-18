@@ -187,7 +187,7 @@ main = ($) ->
       ($('head') || $('html')).append(customCss)
 
     flipFlopElements: ->
-      for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, h1, h2, h3, h4, h5, h6 applet')
+      for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, applet')
         e = $(e)
         unless e.hasClass('css3dcamera-flip')
           e.addClass('css3dcamera-flip')

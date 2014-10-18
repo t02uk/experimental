@@ -169,7 +169,7 @@
 
       Walker.prototype.flipFlopElements = function() {
         var e, _i, _len, _ref, _results;
-        _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, h1, h2, h3, h4, h5, h6 applet');
+        _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, applet');
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           e = _ref[_i];
