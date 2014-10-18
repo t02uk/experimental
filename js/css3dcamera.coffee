@@ -133,7 +133,8 @@ main = ($) ->
         """
       asters = """
       * {
-        #{asters.join("\n")}
+        #{asters.join("\n")};
+        overflow: visible !important;
       }
       """
 
