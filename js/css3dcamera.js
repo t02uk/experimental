@@ -118,6 +118,7 @@
         this.position = new THREE.Vector3($(document).width() / 4, 100, 100);
         this.upTo = new THREE.Vector3(0, 0, 1);
         this.installCss();
+        this.stepPotential = 0;
       }
 
       Walker.prototype.installCss = function() {
@@ -198,6 +199,7 @@
           up = new THREE.Vector3(0, 0, -1);
           if (Keyboard.pressed(37)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI / 2));
+            this.stepPotential;
           }
           if (Keyboard.pressed(38)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI * 0));
@@ -227,9 +229,20 @@
         }
       };
 
+      Walker.prototype.addStepPotential = function() {
+        if (this.stepPotential <= 0) {
+          return this.stepPotential += 4;
+        }
+      };
+
       Walker.prototype.apply = function() {
+        var geta;
+        geta = Math.sin(this.stepPotential * Math.PI / 4) * 10;
         this.at = this.position.clone().add(this.direction());
-        return this.camera.lookAt(this.position, this.at, this.upTo);
+        this.camera.lookAt(this.position.clone().add(new THREE.Vector3(0, 0, geta)), this.at, this.upTo);
+        if (this.stepPotential > 0) {
+          return this.stepPotential--;
+        }
       };
 
       Walker.prototype.direction = function() {

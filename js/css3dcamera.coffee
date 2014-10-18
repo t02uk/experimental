@@ -122,6 +122,7 @@ main = ($) ->
       @position = new THREE.Vector3($(document).width() / 4, 100, 100)
       @upTo = new THREE.Vector3(0, 0, 1)
       @installCss()
+      @stepPotential = 0
 
     installCss: ->
 
@@ -217,6 +218,7 @@ main = ($) ->
 
         if Keyboard.pressed(37)
           @position.add(front.clone().applyAxisAngle(up, Math.PI / 2))
+          @stepPotential
         if Keyboard.pressed(38)
           @position.add(front.clone().applyAxisAngle(up, Math.PI * 0))
         if Keyboard.pressed(39)
@@ -235,9 +237,15 @@ main = ($) ->
         if Keyboard.downed(32) or Keyboard.downed(13)
           @flipFlopElements()
 
+    addStepPotential: ->
+      @stepPotential += 4 if @stepPotential <= 0
+
     apply: ->
+      geta = Math.sin(@stepPotential * Math.PI / 4) * 10
       @at = @position.clone().add(@direction())
-      @camera.lookAt(@position, @at, @upTo)
+      @camera.lookAt(@position.clone().add(new THREE.Vector3(0, 0, geta)), @at, @upTo)
+
+      @stepPotential-- if @stepPotential > 0
 
     direction: ->
       unit = new THREE.Vector3(0, 1, 0)
