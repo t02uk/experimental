@@ -199,16 +199,19 @@
           up = new THREE.Vector3(0, 0, -1);
           if (Keyboard.pressed(37)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI / 2));
-            this.stepPotential;
+            this.addStepPotential();
           }
           if (Keyboard.pressed(38)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI * 0));
+            this.addStepPotential();
           }
           if (Keyboard.pressed(39)) {
             this.position.add(front.clone().applyAxisAngle(up, -Math.PI / 2));
+            this.addStepPotential();
           }
           if (Keyboard.pressed(40)) {
-            return this.position.add(front.clone().applyAxisAngle(up, -Math.PI * 1));
+            this.position.add(front.clone().applyAxisAngle(up, -Math.PI * 1));
+            return this.addStepPotential();
           }
         } else {
           if (Keyboard.pressed(37)) {

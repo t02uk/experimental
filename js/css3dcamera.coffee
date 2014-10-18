@@ -218,13 +218,16 @@ main = ($) ->
 
         if Keyboard.pressed(37)
           @position.add(front.clone().applyAxisAngle(up, Math.PI / 2))
-          @stepPotential
+          @addStepPotential()
         if Keyboard.pressed(38)
           @position.add(front.clone().applyAxisAngle(up, Math.PI * 0))
+          @addStepPotential()
         if Keyboard.pressed(39)
           @position.add(front.clone().applyAxisAngle(up,-Math.PI / 2))
+          @addStepPotential()
         if Keyboard.pressed(40)
           @position.add(front.clone().applyAxisAngle(up,-Math.PI * 1))
+          @addStepPotential()
       else
         if Keyboard.pressed(37)
           @pitch -= 0.1
