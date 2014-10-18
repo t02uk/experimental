@@ -244,7 +244,7 @@ main = ($) ->
       @stepPotential += 4 if @stepPotential <= 0
 
     apply: ->
-      geta = Math.sin(@stepPotential * Math.PI / 4) * 10
+      geta = Math.sin(@stepPotential * Math.PI / 4) * 0.02
       @at = @position.clone().add(@direction())
       @camera.lookAt(@position.clone().add(new THREE.Vector3(0, 0, geta)), @at, @upTo)
 

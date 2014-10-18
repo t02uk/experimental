@@ -240,7 +240,7 @@
 
       Walker.prototype.apply = function() {
         var geta;
-        geta = Math.sin(this.stepPotential * Math.PI / 4) * 10;
+        geta = Math.sin(this.stepPotential * Math.PI / 4) * 0.02;
         this.at = this.position.clone().add(this.direction());
         this.camera.lookAt(this.position.clone().add(new THREE.Vector3(0, 0, geta)), this.at, this.upTo);
         if (this.stepPotential > 0) {
