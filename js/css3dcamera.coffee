@@ -134,7 +134,6 @@ main = ($) ->
       asters = """
       * {
         #{asters.join("\n")};
-        overflow: visible !important;
       }
       """
 

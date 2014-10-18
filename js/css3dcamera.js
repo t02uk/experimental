@@ -132,7 +132,7 @@
           }
           return _results;
         })();
-        asters = "* {\n  " + (asters.join("\n")) + ";\n  overflow: visible !important;\n}";
+        asters = "* {\n  " + (asters.join("\n")) + ";\n}";
         keyframes = (function() {
           var _i, _len, _results;
           _results = [];
