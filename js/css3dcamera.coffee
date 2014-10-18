@@ -119,7 +119,7 @@ main = ($) ->
       @camera = new CSS3DCamera()
       @yaw = -0.1
       @pitch = 0.0
-      @position = new THREE.Vector3($(window).width(), 100, 100)
+      @position = new THREE.Vector3($(body).width() / 4, 100, 100)
       @upTo = new THREE.Vector3(0, 0, 1)
       @installCss()
 
