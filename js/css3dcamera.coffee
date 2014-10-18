@@ -188,6 +188,16 @@ main = ($) ->
       ($('head') || $('html')).append(customCss)
 
     flipFlopElements: ->
+      unless @flipedMoreThanOnce
+        css = $("<style>").attr('type', 'text/css').html(
+          """
+          * {
+            overflow: visible !important;
+          }
+          """
+        )
+        ($('head') || $('html')).append(css)
+
       for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, applet')
         e = $(e)
         unless e.hasClass('css3dcamera-flip')
@@ -196,6 +206,7 @@ main = ($) ->
         else
           e.addClass('css3dcamera-flop')
           e.removeClass('css3dcamera-flip')
+      @flipedMoreThanOnce = true
 
     update: ->
       if Keyboard.pressed(16)

@@ -168,21 +168,24 @@
       };
 
       Walker.prototype.flipFlopElements = function() {
-        var e, _i, _len, _ref, _results;
+        var css, e, _i, _len, _ref;
+        if (!this.flipedMoreThanOnce) {
+          css = $("<style>").attr('type', 'text/css').html("* {\n  overflow: visible !important;\n}");
+          ($('head') || $('html')).append(css);
+        }
         _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, applet');
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           e = _ref[_i];
           e = $(e);
           if (!e.hasClass('css3dcamera-flip')) {
             e.addClass('css3dcamera-flip');
-            _results.push(e.removeClass('css3dcamera-flop'));
+            e.removeClass('css3dcamera-flop');
           } else {
             e.addClass('css3dcamera-flop');
-            _results.push(e.removeClass('css3dcamera-flip'));
+            e.removeClass('css3dcamera-flip');
           }
         }
-        return _results;
+        return this.flipedMoreThanOnce = true;
       };
 
       Walker.prototype.update = function() {
