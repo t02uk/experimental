@@ -115,7 +115,7 @@
         this.camera = new CSS3DCamera();
         this.yaw = -0.1;
         this.pitch = 0.0;
-        this.position = new THREE.Vector3($(body).width() / 4, 100, 100);
+        this.position = new THREE.Vector3($(document).width() / 4, 100, 100);
         this.upTo = new THREE.Vector3(0, 0, 1);
         this.installCss();
       }
