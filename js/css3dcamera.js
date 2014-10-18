@@ -218,7 +218,7 @@
           if (Keyboard.pressed(40)) {
             this.yaw -= 0.1;
           }
-          if (Keyboard.downed(32)) {
+          if (Keyboard.downed(32) || Keyboard.downed(13)) {
             return this.flipFlopElements();
           }
         }

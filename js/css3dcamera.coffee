@@ -222,7 +222,7 @@ main = ($) ->
           @yaw += 0.1
         if Keyboard.pressed(40)
           @yaw -= 0.1
-        if Keyboard.downed(32)
+        if Keyboard.downed(32) or Keyboard.downed(13)
           @flipFlopElements()
 
     apply: ->
