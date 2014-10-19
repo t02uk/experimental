@@ -197,21 +197,18 @@
           front.normalize();
           front.multiplyScalar(30);
           up = new THREE.Vector3(0, 0, -1);
+          this.addStepPotential();
           if (Keyboard.pressed(37)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI / 2));
-            this.addStepPotential();
           }
           if (Keyboard.pressed(38)) {
             this.position.add(front.clone().applyAxisAngle(up, Math.PI * 0));
-            this.addStepPotential();
           }
           if (Keyboard.pressed(39)) {
             this.position.add(front.clone().applyAxisAngle(up, -Math.PI / 2));
-            this.addStepPotential();
           }
           if (Keyboard.pressed(40)) {
-            this.position.add(front.clone().applyAxisAngle(up, -Math.PI * 1));
-            return this.addStepPotential();
+            return this.position.add(front.clone().applyAxisAngle(up, -Math.PI * 1));
           }
         } else {
           if (Keyboard.pressed(37)) {
