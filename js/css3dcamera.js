@@ -174,7 +174,7 @@
           css = $("<style>").attr('type', 'text/css').html("* {\n  overflow: visible !important;\n}");
           ($('head') || $('html')).append(css);
         }
-        _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, applet iframe');
+        _ref = $('img, video, canvas, embed, object, input, textarea, select, label, button, applet, iframe');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           e = _ref[_i];
           e = $(e);

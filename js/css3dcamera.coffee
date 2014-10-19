@@ -198,7 +198,7 @@ main = ($) ->
         )
         ($('head') || $('html')).append(css)
 
-      for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, applet iframe')
+      for e in $('img, video, canvas, embed, object, input, textarea, select, label, button, applet, iframe')
         e = $(e)
         unless e.hasClass('css3dcamera-flip')
           e.addClass('css3dcamera-flip')
